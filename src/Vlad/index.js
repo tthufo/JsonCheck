@@ -1,7 +1,8 @@
 import React, { Fragment, Component } from 'react';
-import {
-  Col, Row
-} from 'reactstrap';
+// import {
+//   Col, Row
+// } from 'reactstrap';
+import Dropzone from 'react-dropzone'
 
 const whiteList = [
   'text_question',
@@ -39,10 +40,17 @@ const ROW = ({ data }) => {
       {data && data.map(d => {
         return (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-            <div style={{ fontWeight: 'bold', margin: 6, textAlign: 'center', width: '20%' }}>
-              {`Item No: ${d.item + 1}`}
+            <div style={{ fontWeight: 'bold', margin: 6, textAlign: 'left', width: '30%' }}>
+              <div style={{ flexDirection: 'column' }}>
+                <div>
+                  {`Item No: ${d.item + 1}`}
+                </div>
+                <div>
+                  {`ID: ${d.id}`}
+                </div>
+              </div>
             </div>
-            <div style={{ fontWeight: 'italic', margin: 6, textAlign: 'left', width: '80%' }}>
+            <div style={{ fontStyle: 'italic', margin: 6, textAlign: 'left', width: '70%', height: '100%' }}>
               {d.error && d.error.map(k => {
                 return (
                   <div style={{ marginBottom: 10 }}>
@@ -87,6 +95,7 @@ export class Login extends Component {
   }
 
   handleFile = e => {
+    // console.log
     var files = e.target.files
     var filename = files[0].name
     this.setState({ name: filename })
@@ -108,8 +117,12 @@ export class Login extends Component {
           var errors = []
 
           const dup = DUP(ide, f.id)
-          if (dup == true) {
+          if (dup == true && f.id.split(" ").join("").length != 0) {
             errors.push('Duplicated id: ' + f.id)
+          }
+
+          if (f.id.split(" ").join("").length == 0) {
+            errors.push('Unique id: Empty')
           }
 
           if (!whiteList.includes(f.label)) {
@@ -118,7 +131,7 @@ export class Login extends Component {
 
           if (f.box.length != 4) {
             errors.push('Bounding box error, box length: ' + f.box.length)
-            result.push({ page: p.page, item: index, error: errors })
+            result.push({ id: f.id, page: p.page, item: index, error: errors })
           } else {
 
             let left = f.box[0]
@@ -133,7 +146,7 @@ export class Login extends Component {
             } else if (top < bottom && left > right) {
               errors.push('Wrong bounding box value: left > right')
             }
-            result.push({ page: p.page, item: index, error: errors })
+            result.push({ id: f.id, page: p.page, item: index, error: errors })
           }
 
         })
@@ -160,8 +173,19 @@ export class Login extends Component {
     const err = data.filter(e => e.length != 0)
     return (
       <Fragment>
+        <div style={{ fontSize: 20, color: 'green', margin: 10 }}>
+          JSON CHECK
+        </div>
         <div style={{ padding: 30 }}>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }} >
+            {/* <Dropzone onDrop={acceptedFiles => this.handleFile(acceptedFiles)}>
+              {({ getRootProps, getInputProps }) => (
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <div>Drop</div>
+                </div>
+              )}
+            </Dropzone> */}
             <input
               style={{ width: 100 }}
               type="file"
@@ -182,6 +206,9 @@ export class Login extends Component {
               <ROW data={e} />
             )
           })}
+          {err.length == 0 && name.length != '' &&
+            <h1 style={{ color: 'green' }}>No Error Found</h1>
+          }
         </div>
       </Fragment>
     );

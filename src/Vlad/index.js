@@ -84,6 +84,12 @@ export class Login extends Component {
   // label field: chỉ nằm trong list: “text_question” “text_answer” “checkbox_question” “checkbox_input_box” “checkbox_answer” “list_question” “list_input_box” “select_question” “select_input_box” “select_answer” “table_header” “table_cell”
   // id field: là unique
 
+  componentDidMount() {
+    var dropZone = document.getElementById('drop_zone');
+    dropZone.addEventListener('dragover', this.handleDragOver.bind(this), false);
+    dropZone.addEventListener('drop', this.handleFileSelect.bind(this), false);
+  }
+
   uniqueId(json) {
     var ide = []
     json.map(p => {
@@ -95,7 +101,73 @@ export class Login extends Component {
   }
 
   handleFile = e => {
-    // console.log
+    console.log(e.target.files)
+
+    var files = e.target.files
+    var filename = files[0].name
+    this.setState({ name: filename })
+    const fileReader = new FileReader();
+    fileReader.readAsText(e.target.files[0], "UTF-8");
+    var total = []
+    fileReader.onload = e => {
+
+      const json = JSON.parse(e.target.result)
+
+      const ide = this.uniqueId(json)
+
+      json.map(p => {
+
+        var result = []
+
+        p.fields.map((f, index) => {
+
+          var errors = []
+
+          const dup = DUP(ide, f.id)
+          if (dup == true && f.id.split(" ").join("").length != 0) {
+            errors.push('Duplicated id: ' + f.id)
+          }
+
+          if (f.id.split(" ").join("").length == 0) {
+            errors.push('Unique id: Empty')
+          }
+
+          if (!whiteList.includes(f.label)) {
+            errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
+          }
+
+          if (f.box.length != 4) {
+            errors.push('Bounding box error, box length: ' + f.box.length)
+            result.push({ id: f.id, page: p.page, item: index, error: errors })
+          } else {
+
+            let left = f.box[0]
+            let top = f.box[1]
+            let right = f.box[2]
+            let bottom = f.box[3]
+
+            if (top > bottom && left > right) {
+              errors.push('Wrong bounding value: top > bottom èn left > right')
+            } else if (top > bottom && left < right) {
+              errors.push('Wrong boudning box value: top > bottom')
+            } else if (top < bottom && left > right) {
+              errors.push('Wrong bounding box value: left > right')
+            }
+            result.push({ id: f.id, page: p.page, item: index, error: errors })
+          }
+
+        })
+
+        total.push(result.filter(e => e.error.length != 0))
+
+      });
+
+      this.setState({ data: total })
+    };
+  };
+
+  handleFileDrag = (e) => {
+    console.log(e)
     var files = e.target.files
     var filename = files[0].name
     this.setState({ name: filename })
@@ -167,30 +239,103 @@ export class Login extends Component {
     return er
   }
 
+  handleFileSelect(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    var files = e.dataTransfer.files; // FileList object.
+    // this.handleFileDrag(evt)
+    console.log(files)
+    // var files = e//.target.files
+    var filename = files[0].name
+    this.setState({ name: filename })
+    const fileReader = new FileReader();
+    fileReader.readAsText(files[0], "UTF-8");
+    var total = []
+    fileReader.onload = e => {
+
+      const json = JSON.parse(e.target.result)
+
+      const ide = this.uniqueId(json)
+
+      json.map(p => {
+
+        var result = []
+
+        p.fields.map((f, index) => {
+
+          var errors = []
+
+          const dup = DUP(ide, f.id)
+          if (dup == true && f.id.split(" ").join("").length != 0) {
+            errors.push('Duplicated id: ' + f.id)
+          }
+
+          if (f.id.split(" ").join("").length == 0) {
+            errors.push('Unique id: Empty')
+          }
+
+          if (!whiteList.includes(f.label)) {
+            errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
+          }
+
+          if (f.box.length != 4) {
+            errors.push('Bounding box error, box length: ' + f.box.length)
+            result.push({ id: f.id, page: p.page, item: index, error: errors })
+          } else {
+
+            let left = f.box[0]
+            let top = f.box[1]
+            let right = f.box[2]
+            let bottom = f.box[3]
+
+            if (top > bottom && left > right) {
+              errors.push('Wrong bounding value: top > bottom èn left > right')
+            } else if (top > bottom && left < right) {
+              errors.push('Wrong boudning box value: top > bottom')
+            } else if (top < bottom && left > right) {
+              errors.push('Wrong bounding box value: left > right')
+            }
+            result.push({ id: f.id, page: p.page, item: index, error: errors })
+          }
+
+        })
+
+        total.push(result.filter(e => e.error.length != 0))
+
+      });
+
+      this.setState({ data: total })
+    };
+
+  }
+
+  handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+
   render() {
     const { data, name } = this.state;
     console.log(data.filter(e => e.length != 0))
     const err = data.filter(e => e.length != 0)
+
     return (
-      <Fragment>
+      <Fragment
+      // id="drop_zone"
+      >
         <div style={{ fontSize: 20, color: 'green', margin: 10 }}>
           JSON CHECK
         </div>
         <div style={{ padding: 30 }}>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }} >
-            {/* <Dropzone onDrop={acceptedFiles => this.handleFile(acceptedFiles)}>
-              {({ getRootProps, getInputProps }) => (
-                <div {...getRootProps()}>
-                  <input {...getInputProps()} />
-                  <div>Drop</div>
-                </div>
-              )}
-            </Dropzone> */}
             <input
               style={{ width: 100 }}
+              id="drop_zone"
               type="file"
               accept=".json"
-              title="sfdsfdsf"
+              title=" "
               value={this.state.pagetwodata}
               onChange={this.handleFile.bind(this)}
             />

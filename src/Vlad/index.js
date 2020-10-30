@@ -2,7 +2,7 @@ import React, { Fragment, Component } from 'react';
 // import {
 //   Col, Row
 // } from 'reactstrap';
-import Dropzone from 'react-dropzone'
+// import Dropzone from 'react-dropzone'
 
 const whiteList = [
   'text_question',
@@ -29,7 +29,6 @@ function DUP(array, value) {
 }
 
 const ROW = ({ data }) => {
-  console.log(data)
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       <div style={{ width: '40%', margin: '25px', display: 'flex', justifyContent: 'center' }}>
@@ -101,8 +100,6 @@ export class Login extends Component {
   }
 
   handleFile = e => {
-    console.log(e.target.files)
-
     var files = e.target.files
     var filename = files[0].name
     this.setState({ name: filename })
@@ -111,124 +108,156 @@ export class Login extends Component {
     var total = []
     fileReader.onload = e => {
 
-      const json = JSON.parse(e.target.result)
+      try {
 
-      const ide = this.uniqueId(json)
+        const json = JSON.parse(e.target.result)
 
-      json.map(p => {
+        const ide = this.uniqueId(json)
 
-        var result = []
+        json.map(p => {
 
-        p.fields.map((f, index) => {
+          var result = []
 
-          var errors = []
+          p.fields.map((f, index) => {
 
-          const dup = DUP(ide, f.id)
-          if (dup == true && f.id.split(" ").join("").length != 0) {
-            errors.push('Duplicated id: ' + f.id)
-          }
+            var errors = []
 
-          if (f.id.split(" ").join("").length == 0) {
-            errors.push('Unique id: Empty')
-          }
-
-          if (!whiteList.includes(f.label)) {
-            errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
-          }
-
-          if (f.box.length != 4) {
-            errors.push('Bounding box error, box length: ' + f.box.length)
-            result.push({ id: f.id, page: p.page, item: index, error: errors })
-          } else {
-
-            let left = f.box[0]
-            let top = f.box[1]
-            let right = f.box[2]
-            let bottom = f.box[3]
-
-            if (top > bottom && left > right) {
-              errors.push('Wrong bounding value: top > bottom èn left > right')
-            } else if (top > bottom && left < right) {
-              errors.push('Wrong boudning box value: top > bottom')
-            } else if (top < bottom && left > right) {
-              errors.push('Wrong bounding box value: left > right')
+            const dup = DUP(ide, f.id)
+            if (dup == true && f.id.split(" ").join("").length != 0) {
+              errors.push('Duplicated id: ' + f.id)
             }
-            result.push({ id: f.id, page: p.page, item: index, error: errors })
-          }
 
-        })
+            if (f.id.split(" ").join("").length == 0) {
+              errors.push('Unique id: Empty')
+            }
 
-        total.push(result.filter(e => e.error.length != 0))
+            if (!whiteList.includes(f.label)) {
+              errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
+            }
 
-      });
+            if (f.box.length != 4) {
+              errors.push('Bounding box error, box length: ' + f.box.length)
+              result.push({ id: f.id, page: p.page, item: index, error: errors })
+            } else {
 
+              let left = f.box[0]
+              if (parseFloat(left) <= 0) {
+                errors.push('Invalid bounding value left: ' + left)
+              }
+              let top = f.box[1]
+              if (parseFloat(top) <= 0) {
+                errors.push('Invalid bounding value top: ' + top)
+              }
+              let right = f.box[2]
+              if (parseFloat(right) <= 0) {
+                errors.push('Invalid bounding value right: ' + right)
+              }
+              let bottom = f.box[3]
+              if (parseFloat(bottom) <= 0) {
+                errors.push('Invalid bounding value bottom: ' + bottom)
+              }
+
+              if (top > bottom && left > right) {
+                errors.push('Wrong bounding value: top > bottom èn left > right')
+              } else if (top > bottom && left < right) {
+                errors.push('Wrong boudning box value: top > bottom')
+              } else if (top < bottom && left > right) {
+                errors.push('Wrong bounding box value: left > right')
+              }
+              result.push({ id: f.id, page: p.page, item: index, error: errors })
+            }
+
+          })
+
+          total.push(result.filter(e => e.error.length != 0))
+
+        });
+
+      } catch (e) {
+        alert(e)
+      }
       this.setState({ data: total })
     };
   };
 
   handleFileDrag = (e) => {
-    console.log(e)
-    var files = e.target.files
+    var files = e.dataTransfer.files;
     var filename = files[0].name
     this.setState({ name: filename })
     const fileReader = new FileReader();
-    fileReader.readAsText(e.target.files[0], "UTF-8");
+    fileReader.readAsText(files[0], "UTF-8");
     var total = []
+
     fileReader.onload = e => {
+      try {
 
-      const json = JSON.parse(e.target.result)
+        const json = JSON.parse(e.target.result)
 
-      const ide = this.uniqueId(json)
+        const ide = this.uniqueId(json)
 
-      json.map(p => {
+        json.map(p => {
 
-        var result = []
+          var result = []
 
-        p.fields.map((f, index) => {
+          p.fields.map((f, index) => {
 
-          var errors = []
+            var errors = []
 
-          const dup = DUP(ide, f.id)
-          if (dup == true && f.id.split(" ").join("").length != 0) {
-            errors.push('Duplicated id: ' + f.id)
-          }
-
-          if (f.id.split(" ").join("").length == 0) {
-            errors.push('Unique id: Empty')
-          }
-
-          if (!whiteList.includes(f.label)) {
-            errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
-          }
-
-          if (f.box.length != 4) {
-            errors.push('Bounding box error, box length: ' + f.box.length)
-            result.push({ id: f.id, page: p.page, item: index, error: errors })
-          } else {
-
-            let left = f.box[0]
-            let top = f.box[1]
-            let right = f.box[2]
-            let bottom = f.box[3]
-
-            if (top > bottom && left > right) {
-              errors.push('Wrong bounding value: top > bottom èn left > right')
-            } else if (top > bottom && left < right) {
-              errors.push('Wrong boudning box value: top > bottom')
-            } else if (top < bottom && left > right) {
-              errors.push('Wrong bounding box value: left > right')
+            const dup = DUP(ide, f.id)
+            if (dup == true && f.id.split(" ").join("").length != 0) {
+              errors.push('Duplicated id: ' + f.id)
             }
-            result.push({ id: f.id, page: p.page, item: index, error: errors })
-          }
 
-        })
+            if (f.id.split(" ").join("").length == 0) {
+              errors.push('Unique id: Empty')
+            }
 
-        total.push(result.filter(e => e.error.length != 0))
+            if (!whiteList.includes(f.label)) {
+              errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
+            }
 
-      });
+            if (f.box.length != 4) {
+              errors.push('Bounding box error, box length: ' + f.box.length)
+              result.push({ id: f.id, page: p.page, item: index, error: errors })
+            } else {
 
+              let left = f.box[0]
+              if (parseFloat(left) <= 0) {
+                errors.push('Invalid bounding value left: ' + left)
+              }
+              let top = f.box[1]
+              if (parseFloat(top) <= 0) {
+                errors.push('Invalid bounding value top: ' + top)
+              }
+              let right = f.box[2]
+              if (parseFloat(right) <= 0) {
+                errors.push('Invalid bounding value right: ' + right)
+              }
+              let bottom = f.box[3]
+              if (parseFloat(bottom) <= 0) {
+                errors.push('Invalid bounding value bottom: ' + bottom)
+              }
+
+              if (top > bottom && left > right) {
+                errors.push('Wrong bounding value: top > bottom èn left > right')
+              } else if (top > bottom && left < right) {
+                errors.push('Wrong boudning box value: top > bottom')
+              } else if (top < bottom && left > right) {
+                errors.push('Wrong bounding box value: left > right')
+              }
+              result.push({ id: f.id, page: p.page, item: index, error: errors })
+            }
+
+          })
+
+          total.push(result.filter(e => e.error.length != 0))
+
+        });
+      } catch (e) {
+        alert(e)
+      }
       this.setState({ data: total })
-    };
+    }
   };
 
   getE(ee) {
@@ -244,69 +273,10 @@ export class Login extends Component {
     e.preventDefault();
 
     var files = e.dataTransfer.files; // FileList object.
-    // this.handleFileDrag(evt)
-    console.log(files)
+    this.handleFileDrag(e)
+
+    // console.log(files)
     // var files = e//.target.files
-    var filename = files[0].name
-    this.setState({ name: filename })
-    const fileReader = new FileReader();
-    fileReader.readAsText(files[0], "UTF-8");
-    var total = []
-    fileReader.onload = e => {
-
-      const json = JSON.parse(e.target.result)
-
-      const ide = this.uniqueId(json)
-
-      json.map(p => {
-
-        var result = []
-
-        p.fields.map((f, index) => {
-
-          var errors = []
-
-          const dup = DUP(ide, f.id)
-          if (dup == true && f.id.split(" ").join("").length != 0) {
-            errors.push('Duplicated id: ' + f.id)
-          }
-
-          if (f.id.split(" ").join("").length == 0) {
-            errors.push('Unique id: Empty')
-          }
-
-          if (!whiteList.includes(f.label)) {
-            errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
-          }
-
-          if (f.box.length != 4) {
-            errors.push('Bounding box error, box length: ' + f.box.length)
-            result.push({ id: f.id, page: p.page, item: index, error: errors })
-          } else {
-
-            let left = f.box[0]
-            let top = f.box[1]
-            let right = f.box[2]
-            let bottom = f.box[3]
-
-            if (top > bottom && left > right) {
-              errors.push('Wrong bounding value: top > bottom èn left > right')
-            } else if (top > bottom && left < right) {
-              errors.push('Wrong boudning box value: top > bottom')
-            } else if (top < bottom && left > right) {
-              errors.push('Wrong bounding box value: left > right')
-            }
-            result.push({ id: f.id, page: p.page, item: index, error: errors })
-          }
-
-        })
-
-        total.push(result.filter(e => e.error.length != 0))
-
-      });
-
-      this.setState({ data: total })
-    };
 
   }
 
@@ -318,12 +288,11 @@ export class Login extends Component {
 
   render() {
     const { data, name } = this.state;
-    console.log(data.filter(e => e.length != 0))
+    // console.log(data.filter(e => e.length != 0))
     const err = data.filter(e => e.length != 0)
 
     return (
       <Fragment
-      // id="drop_zone"
       >
         <div style={{ fontSize: 20, color: 'green', margin: 10 }}>
           JSON CHECK

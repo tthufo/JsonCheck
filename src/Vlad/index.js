@@ -3,6 +3,7 @@ import React, { Fragment, Component } from 'react';
 //   Col, Row
 // } from 'reactstrap';
 // import Dropzone from 'react-dropzone'
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const whiteList = [
   'text_question',
@@ -47,6 +48,15 @@ const ROW = ({ data }) => {
                 <div>
                   {`ID: ${d.id}`}
                 </div>
+                {/* <button
+                  onClick={() => copy(d.id)}
+                >COPY
+                </button> */}
+                <CopyToClipboard text={d.id}
+                // onCopy={() => this.setState({copied: true})}
+                >
+                  <button>COPY</button>
+                </CopyToClipboard>
               </div>
             </div>
             <div style={{ fontStyle: 'italic', margin: 6, textAlign: 'left', width: '70%', height: '100%' }}>
@@ -74,14 +84,9 @@ export class Login extends Component {
       pagetwodata: '',
       error: false,
       data: [],
+      copy: '',
     };
   }
-
-  // Left-top-right-bottom
-
-  //   coordinate: top < bottom, left < right , 1 coordinate phải đủ cả 4
-  // label field: chỉ nằm trong list: “text_question” “text_answer” “checkbox_question” “checkbox_input_box” “checkbox_answer” “list_question” “list_input_box” “select_question” “select_input_box” “select_answer” “table_header” “table_cell”
-  // id field: là unique
 
   componentDidMount() {
     var dropZone = document.getElementById('drop_zone');
@@ -317,7 +322,13 @@ export class Login extends Component {
           </div>
           {err.length != 0 && err.map(e => {
             return (
-              <ROW data={e} />
+              <ROW index={e} data={e}
+              // copy={(copy) => this.setState({ copy }, () => {
+              // const context = this.state.copy;
+              // context.select();
+              // document.execCommand("copy");
+              // })} 
+              />
             )
           })}
           {err.length == 0 && name.length != '' &&

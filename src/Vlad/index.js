@@ -29,6 +29,26 @@ function DUP(array, value) {
   return valuesAlreadySeen.length > 1
 }
 
+function NOLINK(array, value) {
+  let valuesAlreadySeen = []
+  for (let i = 0; i < array.length; i++) {
+    if (value == array[i]) {
+      valuesAlreadySeen.push(value)
+    }
+  }
+  return valuesAlreadySeen.length = 0
+}
+
+function INID(array, value) {
+  let valuesAlreadySeen = []
+  for (let i = 0; i < array.length; i++) {
+    if (value == array[i]) {
+      valuesAlreadySeen.push(value)
+    }
+  }
+  return valuesAlreadySeen.length >= 1
+}
+
 const ROW = ({ data }) => {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -53,17 +73,25 @@ const ROW = ({ data }) => {
                 >COPY
                 </button> */}
                 <CopyToClipboard text={d.id}
-                // onCopy={() => this.setState({copied: true})}
                 >
-                  <button>COPY</button>
+                  <button style={{ fontWeight: 'bold' }}>COPY</button>
                 </CopyToClipboard>
               </div>
             </div>
             <div style={{ fontStyle: 'italic', margin: 6, textAlign: 'left', width: '70%', height: '100%' }}>
               {d.error && d.error.map(k => {
                 return (
-                  <div style={{ marginBottom: 10 }}>
+                  <div style={{ flex: 1, display: 'flex', marginBottom: 10, flexDirection: 'row' }}>
                     {k}
+                    {
+                      k.includes('Unique ID list') &&
+                      <div style={{ marginLeft: 10 }}>
+                        <CopyToClipboard text={k.replace('Linking item not in Unique ID list: ', '')}
+                        >
+                          <button style={{ fontWeight: 'bold' }}>COPY</button>
+                        </CopyToClipboard>
+                      </div>
+                    }
                   </div>
                 );
               })}
@@ -71,6 +99,9 @@ const ROW = ({ data }) => {
           </div>
         )
       })}
+      <div style={{ width: 'auto', height: 1, border: '1px solid gray' }}>
+
+      </div>
     </div>
   );
 };
@@ -104,6 +135,18 @@ export class Login extends Component {
     return ide
   }
 
+  getLinking(json) {
+    var ide = []
+    json.map(p => {
+      p.fields.map(f => {
+        f.linking.map(m => {
+          ide.push(...m)
+        })
+      })
+    })
+    return ide
+  }
+
   handleFile = e => {
     var files = e.target.files
     var filename = files[0].name
@@ -119,6 +162,8 @@ export class Login extends Component {
 
         const ide = this.uniqueId(json)
 
+        const linking = this.getLinking(json)
+
         json.map(p => {
 
           var result = []
@@ -126,6 +171,26 @@ export class Login extends Component {
           p.fields.map((f, index) => {
 
             var errors = []
+
+            const ling = []
+
+            f.linking.map(lin => {
+              ling.push(...lin)
+            })
+
+            const noInId = ling.filter(l => !INID(ide, l))
+
+            if (noInId.length != 0) {
+              noInId.map(no => {
+                errors.push('Linking item not in Unique ID list: ' + no)
+              })
+            }
+
+            const noInLink = INID(linking, f.id)
+
+            if (noInLink == false && f.id.split(" ").join("").length != 0) {
+              errors.push('Unique ID not in linking list: ' + f.id)
+            }
 
             const dup = DUP(ide, f.id)
             if (dup == true && f.id.split(" ").join("").length != 0) {
@@ -200,6 +265,8 @@ export class Login extends Component {
 
         const ide = this.uniqueId(json)
 
+        const linking = this.getLinking(json)
+
         json.map(p => {
 
           var result = []
@@ -207,6 +274,26 @@ export class Login extends Component {
           p.fields.map((f, index) => {
 
             var errors = []
+
+            const ling = []
+
+            f.linking.map(lin => {
+              ling.push(...lin)
+            })
+
+            const noInId = ling.filter(l => !INID(ide, l))
+
+            if (noInId.length != 0) {
+              noInId.map(no => {
+                errors.push('Linking item not in Unique ID list: ' + no)
+              })
+            }
+
+            const noInLink = INID(linking, f.id)
+
+            if (noInLink == false && f.id.split(" ").join("").length != 0) {
+              errors.push('Unique ID not in linking list: ' + f.id)
+            }
 
             const dup = DUP(ide, f.id)
             if (dup == true && f.id.split(" ").join("").length != 0) {

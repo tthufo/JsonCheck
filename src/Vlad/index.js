@@ -173,7 +173,7 @@ export class Login extends Component {
           var result = []
 
           if (!p.fields || p.fields.length == 0) {
-            result.push({ id: '', page: p.page, item: 0, error: ['FIELDS data missing'] })
+            result.push({ id: '', page: p.page, item: 0, error: ['FIELDS data missing or EMPTY'] })
           }
 
           p.fields && p.fields.map((f, index) => {
@@ -281,7 +281,7 @@ export class Login extends Component {
           var result = []
 
           if (!p.fields || p.fields.length == 0) {
-            result.push({ id: '', page: p.page, item: 0, error: ['FIELDS data missing'] })
+            result.push({ id: '', page: p.page, item: 0, error: ['FIELDS data missing or EMPTY'] })
           }
 
           p.fields && p.fields.map((f, index) => {

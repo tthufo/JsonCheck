@@ -128,9 +128,11 @@ export class Login extends Component {
   uniqueId(json) {
     var ide = []
     json.map(p => {
-      p.fields.map(f => {
-        ide.push(f.id)
-      })
+      if (p.fields) {
+        p.fields && p.fields.map(f => {
+          ide.push(f.id)
+        })
+      }
     })
     return ide
   }
@@ -138,11 +140,13 @@ export class Login extends Component {
   getLinking(json) {
     var ide = []
     json.map(p => {
-      p.fields.map(f => {
-        f.linking.map(m => {
-          ide.push(...m)
+      if (p.fields) {
+        p.fields && p.fields.map(f => {
+          f.linking && f.linking.map(m => {
+            ide.push(...m)
+          })
         })
-      })
+      }
     })
     return ide
   }
@@ -168,19 +172,24 @@ export class Login extends Component {
 
           var result = []
 
-          p.fields.map((f, index) => {
+          if (!p.fields || p.fields.length == 0) {
+            result.push({ id: '', page: p.page, item: 0, error: ['FIELDS data missing'] })
+          }
+
+          p.fields && p.fields.map((f, index) => {
 
             var errors = []
 
             const ling = []
 
-            f.linking.map(lin => {
+            f.linking && f.linking.map(lin => {
               ling.push(...lin)
             })
 
-            const noInId = ling.filter(l => !INID(ide, l))
+            const noInId = ling.filter(l => !INID(ide, l) && l != "")
 
             if (noInId.length != 0) {
+
               noInId.map(no => {
                 errors.push('Linking item not in Unique ID list: ' + no)
               })
@@ -271,17 +280,21 @@ export class Login extends Component {
 
           var result = []
 
-          p.fields.map((f, index) => {
+          if (!p.fields || p.fields.length == 0) {
+            result.push({ id: '', page: p.page, item: 0, error: ['FIELDS data missing'] })
+          }
+
+          p.fields && p.fields.map((f, index) => {
 
             var errors = []
 
             const ling = []
 
-            f.linking.map(lin => {
+            f.linking && f.linking.map(lin => {
               ling.push(...lin)
             })
 
-            const noInId = ling.filter(l => !INID(ide, l))
+            const noInId = ling.filter(l => !INID(ide, l) && l != "")
 
             if (noInId.length != 0) {
               noInId.map(no => {

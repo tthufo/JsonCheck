@@ -186,62 +186,72 @@ export class Login extends Component {
               ling.push(...lin)
             })
 
+            if (f.linking && f.linking.length == 0) {
+              errors.push('LINKING list item EMPTY')
+            }
+
+            const singleId = f.linking && f.linking.filter(e => e.length <= 1)
+
+            if (singleId.length != 0) {
+              errors.push('LINKING list item has ONE ID')
+            }
+
             const noInId = ling.filter(l => !INID(ide, l) && l != "")
 
             if (noInId.length != 0) {
 
               noInId.map(no => {
-                errors.push('Linking item not in Unique ID list: ' + no)
+                errors.push('LINKING item NOT in UNIQUE ID list: ' + no)
               })
             }
 
             const noInLink = INID(linking, f.id)
 
             if (noInLink == false && f.id.split(" ").join("").length != 0) {
-              errors.push('Unique ID not in linking list: ' + f.id)
+              errors.push('UNIQUE ID not in linking list: ' + f.id)
             }
 
             const dup = DUP(ide, f.id)
             if (dup == true && f.id.split(" ").join("").length != 0) {
-              errors.push('Duplicated id: ' + f.id)
+              errors.push('DUPLICATED id: ' + f.id)
             }
 
             if (f.id.split(" ").join("").length == 0) {
-              errors.push('Unique id: Empty')
+              errors.push('UNIQUE id: EMPTY')
             }
 
             if (!whiteList.includes(f.label)) {
-              errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
+              errors.push('LABEL error: ' + (f.label.split(" ").join("").length == 0 ? 'EMPTY' : f.label))
             }
 
             if (f.box.length != 4) {
-              errors.push('Bounding box error, box length: ' + f.box.length)
+              errors.push('BOUNDING BOX error, box length: ' + f.box.length)
               result.push({ id: f.id, page: p.page, item: index, error: errors })
             } else {
 
               let left = f.box[0]
               if (parseFloat(left) <= 0) {
-                errors.push('Invalid bounding value left: ' + left)
+                errors.push('Invalid BOUNDING BOX value left: ' + left)
               }
               let top = f.box[1]
               if (parseFloat(top) <= 0) {
-                errors.push('Invalid bounding value top: ' + top)
+                errors.push('Invalid BOUNDING BOX value top: ' + top)
               }
               let right = f.box[2]
               if (parseFloat(right) <= 0) {
-                errors.push('Invalid bounding value right: ' + right)
+                errors.push('Invalid BOUNDING BOX value right: ' + right)
               }
               let bottom = f.box[3]
               if (parseFloat(bottom) <= 0) {
-                errors.push('Invalid bounding value bottom: ' + bottom)
+                errors.push('Invalid BOUNDING BOX value bottom: ' + bottom)
               }
 
               if (top > bottom && left > right) {
-                errors.push('Wrong bounding value: top > bottom èn left > right')
+                errors.push('Wrong BOUNDING value: top > bottom èn left > right')
               } else if (top > bottom && left < right) {
-                errors.push('Wrong boudning box value: top > bottom')
+                errors.push('Wrong BOUNDING BOX value: top > bottom')
               } else if (top < bottom && left > right) {
-                errors.push('Wrong bounding box value: left > right')
+                errors.push('Wrong BOUNDING BOX value: left > right')
               }
               result.push({ id: f.id, page: p.page, item: index, error: errors })
             }
@@ -294,61 +304,72 @@ export class Login extends Component {
               ling.push(...lin)
             })
 
+            if (f.linking && f.linking.length == 0) {
+              errors.push('LINKING list item EMPTY')
+            }
+
+            const singleId = f.linking && f.linking.filter(e => e.length <= 1)
+
+            if (singleId.length != 0) {
+              errors.push('LINKING list item has ONE ID')
+            }
+
             const noInId = ling.filter(l => !INID(ide, l) && l != "")
 
             if (noInId.length != 0) {
+
               noInId.map(no => {
-                errors.push('Linking item not in Unique ID list: ' + no)
+                errors.push('LINKING item NOT in UNIQUE ID list: ' + no)
               })
             }
 
             const noInLink = INID(linking, f.id)
 
             if (noInLink == false && f.id.split(" ").join("").length != 0) {
-              errors.push('Unique ID not in linking list: ' + f.id)
+              errors.push('UNIQUE ID not in linking list: ' + f.id)
             }
 
             const dup = DUP(ide, f.id)
             if (dup == true && f.id.split(" ").join("").length != 0) {
-              errors.push('Duplicated id: ' + f.id)
+              errors.push('DUPLICATED id: ' + f.id)
             }
 
             if (f.id.split(" ").join("").length == 0) {
-              errors.push('Unique id: Empty')
+              errors.push('UNIQUE id: EMPTY')
             }
 
             if (!whiteList.includes(f.label)) {
-              errors.push('Label error: ' + (f.label.split(" ").join("").length == 0 ? 'Empty' : f.label))
+              errors.push('LABEL error: ' + (f.label.split(" ").join("").length == 0 ? 'EMPTY' : f.label))
             }
 
             if (f.box.length != 4) {
-              errors.push('Bounding box error, box length: ' + f.box.length)
+              errors.push('BOUNDING BOX error, box length: ' + f.box.length)
               result.push({ id: f.id, page: p.page, item: index, error: errors })
             } else {
 
               let left = f.box[0]
               if (parseFloat(left) <= 0) {
-                errors.push('Invalid bounding value left: ' + left)
+                errors.push('Invalid BOUNDING BOX value left: ' + left)
               }
               let top = f.box[1]
               if (parseFloat(top) <= 0) {
-                errors.push('Invalid bounding value top: ' + top)
+                errors.push('Invalid BOUNDING BOX value top: ' + top)
               }
               let right = f.box[2]
               if (parseFloat(right) <= 0) {
-                errors.push('Invalid bounding value right: ' + right)
+                errors.push('Invalid BOUNDING BOX value right: ' + right)
               }
               let bottom = f.box[3]
               if (parseFloat(bottom) <= 0) {
-                errors.push('Invalid bounding value bottom: ' + bottom)
+                errors.push('Invalid BOUNDING BOX value bottom: ' + bottom)
               }
 
               if (top > bottom && left > right) {
-                errors.push('Wrong bounding value: top > bottom èn left > right')
+                errors.push('Wrong BOUNDING value: top > bottom èn left > right')
               } else if (top > bottom && left < right) {
-                errors.push('Wrong boudning box value: top > bottom')
+                errors.push('Wrong BOUNDING BOX value: top > bottom')
               } else if (top < bottom && left > right) {
-                errors.push('Wrong bounding box value: left > right')
+                errors.push('Wrong BOUNDING BOX value: left > right')
               }
               result.push({ id: f.id, page: p.page, item: index, error: errors })
             }
@@ -358,11 +379,12 @@ export class Login extends Component {
           total.push(result.filter(e => e.error.length != 0))
 
         });
+
       } catch (e) {
         alert(e)
       }
       this.setState({ data: total })
-    }
+    };
   };
 
   getE(ee) {

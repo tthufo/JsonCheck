@@ -190,10 +190,20 @@ export class Login extends Component {
               errors.push('LINKING list item EMPTY')
             }
 
-            const singleId = f.linking && f.linking.filter(e => e.length <= 1)
+            const singleId = f.linking && f.linking.filter(e => e.length == 1)
 
-            if (singleId.length != 0) {
+            const emptyId = f.linking && f.linking.filter(e => e.length == 0)
+
+            if (singleId.length != 0 && emptyId.length == 0) {
               errors.push('LINKING list item has ONE ID')
+            }
+
+            if (singleId.length == 0 && emptyId.length != 0) {
+              errors.push('LINKING list item has EMPTY list')
+            }
+
+            if (singleId.length != 0 && emptyId.length != 0) {
+              errors.push('LINKING list item has ONE ID and EMPTY list')
             }
 
             const noInId = ling.filter(l => !INID(ide, l) && l != "")
@@ -308,10 +318,20 @@ export class Login extends Component {
               errors.push('LINKING list item EMPTY')
             }
 
-            const singleId = f.linking && f.linking.filter(e => e.length <= 1)
+            const singleId = f.linking && f.linking.filter(e => e.length == 1)
 
-            if (singleId.length != 0) {
+            const emptyId = f.linking && f.linking.filter(e => e.length == 0)
+
+            if (singleId.length != 0 && emptyId.length == 0) {
               errors.push('LINKING list item has ONE ID')
+            }
+
+            if (singleId.length == 0 && emptyId.length != 0) {
+              errors.push('LINKING list item has EMPTY list')
+            }
+
+            if (singleId.length != 0 && emptyId.length != 0) {
+              errors.push('LINKING list item has ONE ID and EMPTY list')
             }
 
             const noInId = ling.filter(l => !INID(ide, l) && l != "")
